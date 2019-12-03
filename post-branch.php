@@ -1,16 +1,13 @@
 <?php
 /*
-Plugin Name: Improved Post Branches
-Author: impoved by Kiteretz.inc, origin of Horike Takahiro.
+Plugin Name: Post Branch
+Author: KITERETZ inc.
 Plugin URI:
-Description: Improved "WP Post Branches" for Gutenberg.
+Description: Create branches of published posts to preview, and publish branches to update the originals.
 Version: 1.0.0
-Author URI:
+Author URI: https://kiteretz.com
 Domain Path: /languages
-Text Domain: improved_post_branches
-
-This file is improved by Kiteretz.inc.
-
+Text Domain: post_branch
 */
 
 require_once( dirname( __FILE__ ) . '/merge-branch.php');
@@ -19,7 +16,7 @@ require_once( dirname( __FILE__ ) . '/merge-branch.php');
 require_once( dirname( __FILE__ ) . '/delete-branch.php');
 
 if ( ! defined( 'WPBS_DOMAIN' ) )
-	define( 'WPBS_DOMAIN', 'improved_post_branches' );
+	define( 'WPBS_DOMAIN', 'post_branch' );
 
 if ( ! defined( 'WPBS_PLUGIN_URL' ) )
 	define( 'WPBS_PLUGIN_URL', plugins_url() . '/' . dirname( plugin_basename( __FILE__ ) ));
