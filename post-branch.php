@@ -53,8 +53,8 @@ function kzpb_show_checkout( $wp_admin_bar ) {
 			'href'  => get_permalink( $org_id ),
 			'meta'  => array(
 				'title' => __( 'Move to the source post', KZPB_DOMAIN ),
-			) ),
-		);
+			),
+		) );
 	}
 }
 add_action( 'admin_bar_menu', 'kzpb_show_checkout', 150 );
