@@ -16,11 +16,11 @@ This file is improved by Kiteretz.inc.
 require_once( dirname( __FILE__ ) . '/merge-branch.php');
 
 //ブランチの削除でacfのフックを使用しています
-require_once( dirname( __FILE__ ) . '/delete_branch.php');
+require_once( dirname( __FILE__ ) . '/delete-branch.php');
 
 if ( ! defined( 'WPBS_DOMAIN' ) )
 	define( 'WPBS_DOMAIN', 'improved_post_branches' );
-	
+
 if ( ! defined( 'WPBS_PLUGIN_URL' ) )
 	define( 'WPBS_PLUGIN_URL', plugins_url() . '/' . dirname( plugin_basename( __FILE__ ) ));
 

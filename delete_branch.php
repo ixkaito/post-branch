@@ -10,7 +10,7 @@ function wpbs_delete_branch( $response , $status, $request){
 	if( $publish_status == 'publish' && !empty ( $org_id )){
 		wp_delete_post( $id );
 	}
-	
+
 	return $response;
 }
 
