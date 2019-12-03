@@ -1,13 +1,13 @@
 <?php
 /*
 Plugin Name: Post Branch
-Author: KITERETZ inc.
+Author: KITERETZ
 Plugin URI:
 Description: Create branches of published posts to preview, and publish branches to update the source posts.
 Version: 1.0.0
 Author URI: https://kiteretz.com
 Domain Path: /languages
-Text Domain: post_branch
+Text Domain: post-branch
 */
 
 require_once( dirname( __FILE__ ) . '/merge-branch.php');
@@ -16,7 +16,7 @@ require_once( dirname( __FILE__ ) . '/merge-branch.php');
 require_once( dirname( __FILE__ ) . '/delete-branch.php');
 
 if ( ! defined( 'KZPB_DOMAIN' ) ) {
-	define( 'KZPB_DOMAIN', 'post_branch' );
+	define( 'KZPB_DOMAIN', 'post-branch' );
 }
 
 if ( ! defined( 'KZPB_PLUGIN_URL' ) ) {
@@ -26,9 +26,7 @@ if ( ! defined( 'KZPB_PLUGIN_URL' ) ) {
 load_plugin_textdomain( KZPB_DOMAIN, KZPB_DOMAIN . '/languages', dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
 // 記事編集画面でのブランチ表示
-add_action( 'admin_bar_menu', 'kzpb_show_checkout', 150 );
 function kzpb_show_checkout( $wp_admin_bar ) {
-
 	global $post;
 	global $pagenow;
 
@@ -59,20 +57,21 @@ function kzpb_show_checkout( $wp_admin_bar ) {
 		);
 	}
 }
+add_action( 'admin_bar_menu', 'kzpb_show_checkout', 150 );
 
 // 通知など
-add_action( 'admin_notices', 'kzpb_admin_notice' );
 function kzpb_admin_notice() {
-	if ( isset($_REQUEST['post']) ) {
+	if ( isset( $_REQUEST['post'] ) ) {
 		$id = $_REQUEST['post'];
 		if ( $old_id = get_post_meta( $id, '_kzpb_pre_post_id', true ) ) {
-			echo '<div id="kzpb_notice" class="updated fade"><p>' . sprintf( __( "This post is a copy of the post id <a href='%s' target='__blank' >%s</a> Overwrite the original post by pressing the publish button.", KZPB_DOMAIN ),  get_permalink($old_id), $old_id ) . '</p></div>';
+			echo '<div id="wpbs_notice" class="updated fade"><p>' . sprintf( __( 'This post is a branch of ID <a href="%s" target="_blank">%s</a>. Publishing this post overwrites the original.', KZPB_DOMAIN ),  get_permalink( $old_id ), $old_id ) . '</p></div>';
 		}
 	}
 }
+add_action( 'admin_notices', 'kzpb_admin_notice' );
 
 function kzpb_admin_notice_saved_init() {
-	if ( isset($_REQUEST['message']) && $_REQUEST['message'] == 'kzpb_msg' )
+	if ( isset( $_REQUEST['message'] ) && $_REQUEST['message'] == 'kzpb_msg' )
 		add_action( 'admin_notices', 'kzpb_admin_notice_saved' );
 }
 
@@ -81,11 +80,11 @@ function kzpb_admin_notice_saved() {
 }
 
 // edit.php画面にて「 ○○のブランチ」を表示
-add_filter( 'display_post_states', 'kzpb_display_branch_stat' );
 function kzpb_display_branch_stat( $stat ) {
-    global $post;
-    if ( $org_id = get_post_meta( $post->ID, '_kzpb_pre_post_id', true ) ) {
-        $stat[] = sprintf( __( 'Branch of %d', KZPB_DOMAIN ), $org_id );
-    }
-    return $stat;
+	global $post;
+	if ( $org_id = get_post_meta( $post->ID, '_kzpb_pre_post_id', true ) ) {
+		$stat[] = sprintf( __( 'Branch of %d', KZPB_DOMAIN ), $org_id );
+	}
+	return $stat;
 }
+add_filter( 'display_post_states', 'kzpb_display_branch_stat' );
