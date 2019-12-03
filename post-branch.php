@@ -3,7 +3,7 @@
 Plugin Name: Post Branch
 Author: KITERETZ inc.
 Plugin URI:
-Description: Create branches of published posts to preview, and publish branches to update the originals.
+Description: Create branches of published posts to preview, and publish branches to update the source posts.
 Version: 1.0.0
 Author URI: https://kiteretz.com
 Domain Path: /languages
@@ -32,7 +32,7 @@ function wpbs_show_checkout( $wp_admin_bar ) {
 	global $post;
 	global $pagenow;
 
-	if ( !is_admin_bar_showing()
+	if ( ! is_admin_bar_showing()
 		|| empty( $post )
 		|| $post->post_type == 'page'
 		|| $pagenow == 'edit.php'
@@ -42,22 +42,20 @@ function wpbs_show_checkout( $wp_admin_bar ) {
 
 	// 既存記事はブランチ作成ボタン
 	if ( empty( $org_id )){
-		$wp_admin_bar->add_menu( array (
-			'id' => 'make branch',
-			'title' => __( 'Create Branch', KZPB_DOMAIN ),
-			'href' => KZPB_PLUGIN_URL.'/checkout-branch.php?checkout='.$post->ID
-			)
-		);
+		$wp_admin_bar->add_menu( array(
+			'id'    => 'make branch',
+			'title' => __( 'New Branch', KZPB_DOMAIN ),
+			'href'  => KZPB_PLUGIN_URL . '/checkout-branch.php?checkout=' . $post->ID,
+		) );
 	// ブランチの記事なら「編集中」を表示
 	} else {
-		$wp_admin_bar->add_menu( array (
-			'id' => 'edit branch',
+		$wp_admin_bar->add_menu( array(
+			'id'    => 'edit branch',
 			'title' => sprintf( __( 'Editing branch of %d', KZPB_DOMAIN ), $org_id ),
-			'href' => get_permalink( $org_id ),
-			'meta' => array(
-					'title' => __('Move source post', KZPB_DOMAIN)
-				)
-			)
+			'href'  => get_permalink( $org_id ),
+			'meta'  => array(
+				'title' => __( 'Move to the source post', KZPB_DOMAIN ),
+			) ),
 		);
 	}
 }
