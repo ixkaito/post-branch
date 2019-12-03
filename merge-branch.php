@@ -1,24 +1,24 @@
 <?php
 
 // rest_after_insertフックは投稿タイプごとに登録が必要
-add_action( 'init', 'add_wpbs_after_insert_hooks', 999);
-function add_wpbs_after_insert_hooks() {
+add_action( 'init', 'add_kzpb_after_insert_hooks', 999);
+function add_kzpb_after_insert_hooks() {
 
 	$additional_types = get_post_types( array( '_builtin' => false, 'show_ui' => true ) );
 
 	foreach ( $additional_types as $post_type ) {
-		add_action( 'rest_after_insert_' . $post_type, 'wpbs_merge_post', 10,2);
+		add_action( 'rest_after_insert_' . $post_type, 'kzpb_merge_post', 10,2);
 	}
 
-	add_action( 'rest_after_insert_post', 'wpbs_merge_post', 10, 2 );
+	add_action( 'rest_after_insert_post', 'kzpb_merge_post', 10, 2 );
 
 }
 
 //merge相当 publish時に分岐元の投稿を更新する
-function wpbs_merge_post( $post, $request ) {
+function kzpb_merge_post( $post, $request ) {
 
 	$id = $post->ID;
-	$org_id = get_post_meta( $id, '_wpbs_pre_post_id', true );
+	$org_id = get_post_meta( $id, '_kzpb_pre_post_id', true );
 
 	if( $post->post_status != 'publish' || empty( $org_id )) {
 		return;
@@ -49,7 +49,7 @@ function wpbs_merge_post( $post, $request ) {
 		'post_type' => $post->post_type,
 		'post_mime_type' => $post->post_mime_type
 	);
-	wp_update_post( apply_filters( 'wpbs_draft_to_publish_update_post', $new ) );
+	wp_update_post( apply_filters( 'kzpb_draft_to_publish_update_post', $new ) );
 
 	//postmeta
 	$keys = get_post_custom_keys( $id );
@@ -59,13 +59,13 @@ function wpbs_merge_post( $post, $request ) {
 		if ( preg_match( '/^_feedback_/', $key ) )
 			continue;
 
-		if ( preg_match( '/_wpbs_pre_post_id/', $key ) )
+		if ( preg_match( '/_kzpb_pre_post_id/', $key ) )
 			continue;
 
 		if ( preg_match( '/_wp_old_slug/', $key ) )
 			continue;
-			
-		$key = apply_filters( 'wpbs_draft_to_publish_postmeta_filter', $key );
+
+		$key = apply_filters( 'kzpb_draft_to_publish_postmeta_filter', $key );
 
 		delete_post_meta( $org_id, $key );
 		$values = get_post_custom_values($key, $id );
@@ -102,7 +102,7 @@ function wpbs_merge_post( $post, $request ) {
 				'post_mime_type' => $attachment->post_mime_type,
 				'comment_count' => $attachment->comment_count
 			);
-			$new = apply_filters( 'wpbs_pre_draft_to_publish_attachment', $new );
+			$new = apply_filters( 'kzpb_pre_draft_to_publish_attachment', $new );
 			$attachment_newid = wp_insert_post( $new );
 			$keys = get_post_custom_keys( $attachment->ID );
 
@@ -120,7 +120,7 @@ function wpbs_merge_post( $post, $request ) {
 	$taxonomies = get_object_taxonomies( $post->post_type );
 	foreach ($taxonomies as $taxonomy) {
 		$post_terms = wp_get_object_terms($id, $taxonomy, array( 'orderby' => 'term_order' ));
-		$post_terms = apply_filters( 'wpbs_pre_draft_to_publish_taxonomies', $post_terms );
+		$post_terms = apply_filters( 'kzpb_pre_draft_to_publish_taxonomies', $post_terms );
 		$terms = array();
 		for ($i=0; $i<count($post_terms); $i++) {
 			$terms[] = $post_terms[$i]->slug;
@@ -134,7 +134,7 @@ function wpbs_merge_post( $post, $request ) {
 function filter_branched_url( $url, $post ) {
 
 	$id = $post->ID;
-	$org_id = get_post_meta( $id, '_wpbs_pre_post_id', true );
+	$org_id = get_post_meta( $id, '_kzpb_pre_post_id', true );
 
 	if( $post->post_status == 'publish' && !empty( $org_id )) {
 

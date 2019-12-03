@@ -23,7 +23,7 @@ $pub['post_date_gmt'] = current_time( 'mysql', 1 );
 $pub['post_modified'] = current_time('mysql');
 $pub['post_modified_gmt'] = current_time( 'mysql', 1 );
 
-$pub = apply_filters( 'wpbs_pre_publish_to_draft_post', $pub );
+$pub = apply_filters( 'kzpb_pre_publish_to_draft_post', $pub );
 $draft_id = wp_insert_post( $pub );
 
 // postmeta
@@ -36,7 +36,7 @@ foreach ( (array) $keys as $key ) {
 	if ( preg_match( '/_wp_old_slug/', $key ) )
 		continue;
 
-	$key = apply_filters( 'wpbs_publish_to_draft_postmeta_filter', $key );
+	$key = apply_filters( 'kzpb_publish_to_draft_postmeta_filter', $key );
 
 	$values = get_post_custom_values($key, $id );
 	foreach ( $values as $value ) {
@@ -73,7 +73,7 @@ if ($attachments) {
 			'post_mime_type' => $attachment->post_mime_type,
 			'comment_count' => $attachment->comment_count
 		);
-		$new = apply_filters( 'wpbs_pre_publish_to_draft_attachment', $new );
+		$new = apply_filters( 'kzpb_pre_publish_to_draft_attachment', $new );
 		$attachment_newid = wp_insert_post( $new );
 		$keys = get_post_custom_keys( $attachment->ID );
 
@@ -90,7 +90,7 @@ if ($attachments) {
 $taxonomies = get_object_taxonomies( $pub['post_type'] );
 foreach ($taxonomies as $taxonomy) {
 	$post_terms = wp_get_object_terms($id, $taxonomy, array( 'orderby' => 'term_order' ));
-	$post_terms = apply_filters( 'wpbs_pre_publish_to_draft_taxonomies', $post_terms );
+	$post_terms = apply_filters( 'kzpb_pre_publish_to_draft_taxonomies', $post_terms );
 	$terms = array();
 	for ($i=0; $i<count($post_terms); $i++) {
 		$terms[] = $post_terms[$i]->slug;
@@ -98,7 +98,7 @@ foreach ($taxonomies as $taxonomy) {
 	wp_set_object_terms($draft_id, $terms, $taxonomy);
 }
 
-add_post_meta($draft_id, '_wpbs_pre_post_id', $id);
+add_post_meta($draft_id, '_kzpb_pre_post_id', $id);
 
 if ( ! defined( 'DOING_CRON' ) || ! DOING_CRON ) {
 	wp_safe_redirect( admin_url( 'post.php?post=' . $draft_id . '&action=edit' ) );
