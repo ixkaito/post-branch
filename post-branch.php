@@ -15,19 +15,18 @@ require_once( dirname( __FILE__ ) . '/merge-branch.php');
 //ブランチの削除でacfのフックを使用しています
 require_once( dirname( __FILE__ ) . '/delete-branch.php');
 
-if ( ! defined( 'WPBS_DOMAIN' ) )
-	define( 'WPBS_DOMAIN', 'post_branch' );
+if ( ! defined( 'KZPB_DOMAIN' ) ) {
+	define( 'KZPB_DOMAIN', 'post_branch' );
+}
 
-if ( ! defined( 'WPBS_PLUGIN_URL' ) )
-	define( 'WPBS_PLUGIN_URL', plugins_url() . '/' . dirname( plugin_basename( __FILE__ ) ));
+if ( ! defined( 'KZPB_PLUGIN_URL' ) ) {
+	define( 'KZPB_PLUGIN_URL', plugins_url() . '/' . dirname( plugin_basename( __FILE__ ) ) );
+}
 
-if ( ! defined( 'WPBS_PLUGIN_DIR' ) )
-	define( 'WPBS_PLUGIN_DIR', WP_PLUGIN_DIR . '/' . dirname( plugin_basename( __FILE__ ) ));
-
-load_plugin_textdomain( WPBS_DOMAIN, WPBS_DOMAIN.'/languages', dirname( plugin_basename( __FILE__ ) ).'/languages' );
+load_plugin_textdomain( KZPB_DOMAIN, KZPB_DOMAIN . '/languages', dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
 // 記事編集画面でのブランチ表示
-add_action( 'admin_bar_menu', 'wpbs_show_checkout', 150);
+add_action( 'admin_bar_menu', 'wpbs_show_checkout', 150 );
 function wpbs_show_checkout( $wp_admin_bar ) {
 
 	global $post;
@@ -45,18 +44,18 @@ function wpbs_show_checkout( $wp_admin_bar ) {
 	if ( empty( $org_id )){
 		$wp_admin_bar->add_menu( array (
 			'id' => 'make branch',
-			'title' => __( 'Create Branch', WPBS_DOMAIN ),
-			'href' => WPBS_PLUGIN_URL.'/checkout-branch.php?checkout='.$post->ID
+			'title' => __( 'Create Branch', KZPB_DOMAIN ),
+			'href' => KZPB_PLUGIN_URL.'/checkout-branch.php?checkout='.$post->ID
 			)
 		);
 	// ブランチの記事なら「編集中」を表示
 	} else {
 		$wp_admin_bar->add_menu( array (
 			'id' => 'edit branch',
-			'title' => sprintf( __( 'Editing branch of %d', WPBS_DOMAIN ), $org_id ),
+			'title' => sprintf( __( 'Editing branch of %d', KZPB_DOMAIN ), $org_id ),
 			'href' => get_permalink( $org_id ),
 			'meta' => array(
-					'title' => __('Move source post', WPBS_DOMAIN)
+					'title' => __('Move source post', KZPB_DOMAIN)
 				)
 			)
 		);
@@ -69,7 +68,7 @@ function wpbs_admin_notice() {
 	if ( isset($_REQUEST['post']) ) {
 		$id = $_REQUEST['post'];
 		if ( $old_id = get_post_meta( $id, '_wpbs_pre_post_id', true ) ) {
-			echo '<div id="wpbs_notice" class="updated fade"><p>' . sprintf( __( "This post is a copy of the post id <a href='%s' target='__blank' >%s</a> Overwrite the original post by pressing the publish button.", WPBS_DOMAIN ),  get_permalink($old_id), $old_id ) . '</p></div>';
+			echo '<div id="wpbs_notice" class="updated fade"><p>' . sprintf( __( "This post is a copy of the post id <a href='%s' target='__blank' >%s</a> Overwrite the original post by pressing the publish button.", KZPB_DOMAIN ),  get_permalink($old_id), $old_id ) . '</p></div>';
 		}
 	}
 }
@@ -88,7 +87,7 @@ add_filter( 'display_post_states', 'wpbs_display_branch_stat' );
 function wpbs_display_branch_stat( $stat ) {
     global $post;
     if ( $org_id = get_post_meta( $post->ID, '_wpbs_pre_post_id', true ) ) {
-        $stat[] = sprintf( __( 'Branch of %d', WPBS_DOMAIN ), $org_id );
+        $stat[] = sprintf( __( 'Branch of %d', KZPB_DOMAIN ), $org_id );
     }
     return $stat;
 }
