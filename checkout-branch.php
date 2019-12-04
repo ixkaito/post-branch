@@ -1,6 +1,6 @@
 <?php
 
-require_once(dirname(dirname(dirname(dirname( __FILE__ )))) . '/wp-load.php' );
+require_once( dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) . '/wp-load.php' );
 
 if ( isset( $_GET['checkout'] ) && is_user_logged_in() ) {
 	$id = $_GET['checkout'];
@@ -38,7 +38,7 @@ foreach ( (array) $keys as $key ) {
 
 	$key = apply_filters( 'kzpb_publish_to_draft_postmeta_filter', $key );
 
-	$values = get_post_custom_values($key, $id );
+	$values = get_post_custom_values( $key, $id );
 	foreach ( $values as $value ) {
 		add_post_meta( $draft_id, $key, maybe_unserialize( $value ) );
 	}
@@ -47,7 +47,7 @@ foreach ( (array) $keys as $key ) {
 //attachment
 $args = array( 'post_type' => 'attachment', 'numberposts' => -1, 'post_status' => null, 'post_parent' => $id );
 $attachments = get_posts( $args );
-if ($attachments) {
+if ( $attachments ) {
 	foreach ( $attachments as $attachment ) {
 		$new = array(
 			'post_author' => $attachment->post_author,
@@ -74,31 +74,31 @@ if ($attachments) {
 			'comment_count' => $attachment->comment_count
 		);
 		$new = apply_filters( 'kzpb_pre_publish_to_draft_attachment', $new );
-		$attachment_newid = wp_insert_post( $new );
+		$attachment_new_id = wp_insert_post( $new );
 		$keys = get_post_custom_keys( $attachment->ID );
 
 		$custom_field = array();
 		foreach ( (array) $keys as $key ) {
 			$value = get_post_meta( $attachment->ID, $key, true );
 
-		add_post_meta( $attachment_newid, $key, maybe_unserialize ( $value ) );
+		add_post_meta( $attachment_new_id, $key, maybe_unserialize ( $value ) );
 		}
 	}
 }
 
 //tax
 $taxonomies = get_object_taxonomies( $pub['post_type'] );
-foreach ($taxonomies as $taxonomy) {
-	$post_terms = wp_get_object_terms($id, $taxonomy, array( 'orderby' => 'term_order' ));
+foreach ( $taxonomies as $taxonomy ) {
+	$post_terms = wp_get_object_terms($id, $taxonomy, array( 'orderby' => 'term_order' ) );
 	$post_terms = apply_filters( 'kzpb_pre_publish_to_draft_taxonomies', $post_terms );
 	$terms = array();
-	for ($i=0; $i<count($post_terms); $i++) {
-		$terms[] = $post_terms[$i]->slug;
+	for ( $i = 0; $i < count( $post_terms ); $i++ ) {
+		$terms[] = $post_terms[ $i ]->slug;
 	}
-	wp_set_object_terms($draft_id, $terms, $taxonomy);
+	wp_set_object_terms( $draft_id, $terms, $taxonomy );
 }
 
-add_post_meta($draft_id, '_kzpb_pre_post_id', $id);
+add_post_meta( $draft_id, '_kzpb_pre_post_id', $id );
 
 if ( ! defined( 'DOING_CRON' ) || ! DOING_CRON ) {
 	wp_safe_redirect( admin_url( 'post.php?post=' . $draft_id . '&action=edit' ) );

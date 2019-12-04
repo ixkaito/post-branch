@@ -3,30 +3,24 @@
 Plugin Name: Post Branch
 Author: KITERETZ
 Plugin URI:
-Description: Create branches of published posts to preview, and publish branches to update the source posts.
+Description: Create branches of published posts to edit and preview, and publish branches to update the source posts.
 Version: 1.0.0
 Author URI: https://kiteretz.com
 Domain Path: /languages
 Text Domain: post-branch
 */
 
-require_once( dirname( __FILE__ ) . '/merge-branch.php');
-
-//ブランチの削除でacfのフックを使用しています
-require_once( dirname( __FILE__ ) . '/delete-branch.php');
-
-if ( ! defined( 'KZPB_DOMAIN' ) ) {
-	define( 'KZPB_DOMAIN', 'post-branch' );
+if ( ! defined( 'KZPB_PLUGIN_DIR_URL' ) ) {
+	define( 'KZPB_PLUGIN_DIR_URL', plugin_dir_url( __FILE__ ) );
 }
 
-if ( ! defined( 'KZPB_PLUGIN_URL' ) ) {
-	define( 'KZPB_PLUGIN_URL', plugins_url() . '/' . dirname( plugin_basename( __FILE__ ) ) );
+function kzpb_load_plugin_textdomain() {
+	load_plugin_textdomain( 'post-branch', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 }
-
-load_plugin_textdomain( KZPB_DOMAIN, KZPB_DOMAIN . '/languages', dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+add_action( 'init', 'kzpb_load_plugin_textdomain', 0 );
 
 function kzpb_admin_enqueue_scripts() {
-	wp_enqueue_style( 'post-branch', plugin_dir_url( __FILE__ ) . 'post-branch.css' );
+	wp_enqueue_style( 'post-branch', KZPB_PLUGIN_DIR_URL . 'post-branch.css' );
 }
 add_action( 'admin_enqueue_scripts', 'kzpb_admin_enqueue_scripts' );
 
@@ -41,23 +35,23 @@ function kzpb_show_checkout( $wp_admin_bar ) {
 		|| $pagenow == 'edit.php'
 		|| $pagenow == 'post-new.php')  return;
 
-	$org_id = get_post_meta( $post->ID, "_kzpb_pre_post_id", true );
+	$old_id = get_post_meta( $post->ID, '_kzpb_pre_post_id', true );
 
 	// 既存記事はブランチ作成ボタン
-	if ( empty( $org_id )){
+	if ( empty( $old_id ) ) {
 		$wp_admin_bar->add_menu( array(
 			'id'    => 'new-branch',
-			'title' => __( 'New Branch', KZPB_DOMAIN ),
-			'href'  => KZPB_PLUGIN_URL . '/checkout-branch.php?checkout=' . $post->ID,
+			'title' => __( 'New Branch', 'post-branch' ),
+			'href'  => KZPB_PLUGIN_DIR_URL . 'checkout-branch.php?checkout=' . $post->ID,
 		) );
 	// ブランチの記事なら「編集中」を表示
 	} else {
 		$wp_admin_bar->add_menu( array(
 			'id'    => 'edit-branch',
-			'title' => sprintf( __( 'Editing branch of #%d', KZPB_DOMAIN ), $org_id ),
-			'href'  => get_permalink( $org_id ),
+			'title' => sprintf( __( 'Editing branch of #%d', 'post-branch' ), $old_id ),
+			'href'  => get_permalink( $old_id ),
 			'meta'  => array(
-				'title' => __( 'Move to the source post', KZPB_DOMAIN ),
+				'title' => __( 'Move to the source post', 'post-branch' ),
 			),
 		) );
 	}
@@ -69,7 +63,7 @@ function kzpb_admin_notice() {
 	if ( isset( $_REQUEST['post'] ) ) {
 		$id = $_REQUEST['post'];
 		if ( $old_id = get_post_meta( $id, '_kzpb_pre_post_id', true ) ) {
-			echo '<div id="wpbs_notice" class="updated fade"><p>' . sprintf( __( 'This post is a branch of ID <a href="%s" target="_blank">%s</a>. Publishing this post overwrites the original.', KZPB_DOMAIN ),  get_permalink( $old_id ), $old_id ) . '</p></div>';
+			echo '<div id="wpbs_notice" class="updated fade"><p>' . sprintf( __( 'This post is a branch of ID <a href="%s" target="_blank">%s</a>. Publishing this post overwrites the original.', 'post-branch' ),  get_permalink( $old_id ), $old_id ) . '</p></div>';
 		}
 	}
 }
@@ -87,9 +81,14 @@ function kzpb_admin_notice_saved() {
 // edit.php画面にて「 ○○のブランチ」を表示
 function kzpb_display_branch_stat( $stat ) {
 	global $post;
-	if ( $org_id = get_post_meta( $post->ID, '_kzpb_pre_post_id', true ) ) {
-		$stat[] = sprintf( __( 'Branch of #%d', KZPB_DOMAIN ), $org_id );
+	if ( $old_id = get_post_meta( $post->ID, '_kzpb_pre_post_id', true ) ) {
+		$stat[] = sprintf( __( 'Branch of #%d', 'post-branch' ), $old_id );
 	}
 	return $stat;
 }
 add_filter( 'display_post_states', 'kzpb_display_branch_stat' );
+
+require_once( plugin_dir_path( __FILE__ ) . 'merge-branch.php');
+
+//ブランチの削除でacfのフックを使用しています
+require_once( plugin_dir_path( __FILE__ ) . 'delete-branch.php');
