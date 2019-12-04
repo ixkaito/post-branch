@@ -25,6 +25,11 @@ if ( ! defined( 'KZPB_PLUGIN_URL' ) ) {
 
 load_plugin_textdomain( KZPB_DOMAIN, KZPB_DOMAIN . '/languages', dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
+function kzpb_admin_enqueue_scripts() {
+	wp_enqueue_style( 'post-branch', plugin_dir_url( __FILE__ ) . 'post-branch.css' );
+}
+add_action( 'admin_enqueue_scripts', 'kzpb_admin_enqueue_scripts' );
+
 // 記事編集画面でのブランチ表示
 function kzpb_show_checkout( $wp_admin_bar ) {
 	global $post;
@@ -41,15 +46,15 @@ function kzpb_show_checkout( $wp_admin_bar ) {
 	// 既存記事はブランチ作成ボタン
 	if ( empty( $org_id )){
 		$wp_admin_bar->add_menu( array(
-			'id'    => 'make branch',
+			'id'    => 'new-branch',
 			'title' => __( 'New Branch', KZPB_DOMAIN ),
 			'href'  => KZPB_PLUGIN_URL . '/checkout-branch.php?checkout=' . $post->ID,
 		) );
 	// ブランチの記事なら「編集中」を表示
 	} else {
 		$wp_admin_bar->add_menu( array(
-			'id'    => 'edit branch',
-			'title' => sprintf( __( 'Editing branch of %d', KZPB_DOMAIN ), $org_id ),
+			'id'    => 'edit-branch',
+			'title' => sprintf( __( 'Editing branch of #%d', KZPB_DOMAIN ), $org_id ),
 			'href'  => get_permalink( $org_id ),
 			'meta'  => array(
 				'title' => __( 'Move to the source post', KZPB_DOMAIN ),
@@ -57,7 +62,7 @@ function kzpb_show_checkout( $wp_admin_bar ) {
 		) );
 	}
 }
-add_action( 'admin_bar_menu', 'kzpb_show_checkout', 150 );
+add_action( 'admin_bar_menu', 'kzpb_show_checkout', 9999 );
 
 // 通知など
 function kzpb_admin_notice() {
@@ -83,7 +88,7 @@ function kzpb_admin_notice_saved() {
 function kzpb_display_branch_stat( $stat ) {
 	global $post;
 	if ( $org_id = get_post_meta( $post->ID, '_kzpb_pre_post_id', true ) ) {
-		$stat[] = sprintf( __( 'Branch of %d', KZPB_DOMAIN ), $org_id );
+		$stat[] = sprintf( __( 'Branch of #%d', KZPB_DOMAIN ), $org_id );
 	}
 	return $stat;
 }
