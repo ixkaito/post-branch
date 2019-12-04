@@ -1,0 +1,51 @@
+# Copyright (C) 2019 KITERETZ
+# This file is distributed under the same license as the Post Branch plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Post Branch 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/post-branch\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2019-12-04T05:40:52+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.1.0\n"
+"X-Domain: post-branch\n"
+
+#. Plugin Name of the plugin
+msgid "Post Branch"
+msgstr ""
+
+#. Description of the plugin
+msgid "Create branches of published posts to edit and preview, and publish branches to update the source posts."
+msgstr ""
+
+#. Author of the plugin
+msgid "KITERETZ"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://kiteretz.com"
+msgstr ""
+
+#: post-branch.php:44
+msgid "New Branch"
+msgstr ""
+
+#: post-branch.php:51
+msgid "Editing branch of #%d"
+msgstr ""
+
+#: post-branch.php:54
+msgid "Move to the source post"
+msgstr ""
+
+#: post-branch.php:66
+msgid "This post is a branch of ID <a href=\"%s\" target=\"_blank\">%s</a>. Publishing this post overwrites the original."
+msgstr ""
+
+#: post-branch.php:85
+msgid "Branch of #%d"
+msgstr ""
